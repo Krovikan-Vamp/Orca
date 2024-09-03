@@ -16,16 +16,16 @@ func init() {
 }
 
 func main() {
-	//打印logo
+	// Print logo
 	//color.Green("OrcaC2 Server " + define.Version)
 	//color.Green(define.Logo)
-	//初始化数据库
+	// Initialize the database
 	sqlmgmt.InitDb()
-	//初始化路由
+	// Initialize routes
 	routers.Init()
-	//启动一个定时器用来发送心跳
+	// Start a timer to send heartbeat signals
 	servers.PingTimer()
-	log2.Printf("服务器启动成功，端口号：%s", setting.CommonSetting.HttpPort)
+	log2.Printf("Server started successfully, port: %s", setting.CommonSetting.HttpPort)
 
 	if err := http.ListenAndServe(":"+setting.CommonSetting.HttpPort, nil); err != nil {
 		panic(err)

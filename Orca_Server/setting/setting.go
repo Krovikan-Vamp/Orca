@@ -4,12 +4,13 @@ import (
 	"Orca_Server/sqlmgmt"
 	"flag"
 	"fmt"
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/go-ini/ini"
 	"log"
 	"net"
 	"os"
 	"sync"
+
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/go-ini/ini"
 )
 
 type commonConf struct {
@@ -20,7 +21,7 @@ type commonConf struct {
 var CommonSetting = &commonConf{}
 
 type global struct {
-	LocalHost      string //本机内网IP
+	LocalHost      string // Local intranet IP
 	ServerList     map[string]string
 	ServerListLock sync.RWMutex
 }
@@ -53,7 +54,7 @@ func Setup() {
 	var err error
 	cfg, err = ini.Load(*configFile)
 	if err != nil {
-		log.Fatalf("setting.Setup, fail to parse 'conf/app.ini': %v", err)
+		log.Fatalf("setting.Setup, failed to parse 'conf/app.ini': %v", err)
 	}
 
 	mapTo("common", CommonSetting)
@@ -81,25 +82,24 @@ func Default() {
 	}
 }
 
-// mapTo map section
+// mapTo maps the section to the given structure
 func mapTo(section string, v interface{}) {
 	err := cfg.Section(section).MapTo(v)
 	if err != nil {
-		log.Fatalf("Cfg.MapTo %s err: %v", section, err)
+		log.Fatalf("Cfg.MapTo %s error: %v", section, err)
 	}
 }
 
-//获取本机内网IP
+// getIntranetIp retrieves the local intranet IP
 func getIntranetIp() string {
 	addrs, _ := net.InterfaceAddrs()
 
 	for _, addr := range addrs {
-		// 检查ip地址判断是否回环地址
+		// Check the IP address to determine if it's a loopback address
 		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
 				return ipnet.IP.String()
 			}
-
 		}
 	}
 	return ""
@@ -110,35 +110,35 @@ func addUser() {
 	password := ""
 	repassword := ""
 	userprompt := &survey.Input{
-		Message: "请输入用户名: ",
+		Message: "Please enter the username: ",
 	}
 	survey.AskOne(userprompt, &username)
 	pwdprompt := &survey.Password{
-		Message: "请输入密码: ",
+		Message: "Please enter the password: ",
 	}
 	survey.AskOne(pwdprompt, &password)
 	pwdprompt = &survey.Password{
-		Message: "请再次输入密码: ",
+		Message: "Please enter the password again: ",
 	}
 	survey.AskOne(pwdprompt, &repassword)
 	if password != repassword {
-		log.Fatalf("两次输入的密码不匹配！")
+		log.Fatalf("The passwords do not match!")
 		return
 	}
 	sqlmgmt.AddUser(username, password)
-	log.Println("用户添加成功！")
+	log.Println("User added successfully!")
 }
 
 func delUser() {
 	usernames := sqlmgmt.GetUsernames()
 	selectUsername := ""
 	prompt := &survey.Select{
-		Message: "请选择要删除的指定用户：",
+		Message: "Please select the user to delete:",
 		Options: usernames,
 	}
 	survey.AskOne(prompt, &selectUsername)
 	sqlmgmt.DelUser(selectUsername)
-	log.Println("用户删除成功！")
+	log.Println("User deleted successfully!")
 }
 
 func modUserPwd() {
@@ -147,22 +147,22 @@ func modUserPwd() {
 	password := ""
 	repassword := ""
 	prompt := &survey.Select{
-		Message: "请选择的指定用户：",
+		Message: "Please select the user:",
 		Options: usernames,
 	}
 	survey.AskOne(prompt, &selectUsername)
 	pwdprompt := &survey.Password{
-		Message: "请输入密码: ",
+		Message: "Please enter the password: ",
 	}
 	survey.AskOne(pwdprompt, &password)
 	pwdprompt = &survey.Password{
-		Message: "请再次输入密码: ",
+		Message: "Please enter the password again: ",
 	}
 	survey.AskOne(pwdprompt, &repassword)
 	if password != repassword {
-		log.Fatalf("两次输入的密码不匹配！")
+		log.Fatalf("The passwords do not match!")
 		return
 	}
 	sqlmgmt.ModUserPwd(selectUsername, password)
-	log.Println("密码修改成功！")
+	log.Println("Password changed successfully!")
 }

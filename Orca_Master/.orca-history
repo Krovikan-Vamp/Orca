@@ -37,3 +37,13 @@ close
 ls
 select 1
 close
+?
+help
+ls
+list
+ls
+help
+generate
+ls
+exit
+ls

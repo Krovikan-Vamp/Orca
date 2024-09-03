@@ -4,7 +4,7 @@ apt update -y && apt upgrade -y
 apt-get install -y libxt-dev libxcursor-dev libxrandr-dev libxinerama-dev libglx-dev libglx-dev xorg-dev
 
 export GO111MODULE=on
-export GOPROXY=https://goproxy.cn
+export GOPROXY=direct
 
 mkdir -p out/master out/server out/puppet 
 cd Orca_Master && go build -o ../out/master/Orca_Master_linux_x64 -ldflags "-s -w" && cd ..
